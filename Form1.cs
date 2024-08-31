@@ -66,13 +66,15 @@ namespace Project_Manager
                 int height = this.ClientSize.Height;
                 foreach (var name in allNames)
                 {
-                    System.Windows.Forms.Button btn = new System.Windows.Forms.Button();
-                    btn.Text = name.Trim();
-                    btn.Top = height / 2 - 50;
-                    btn.Left = width / 10 + buttonCount * 110;
-                    btn.Width = 100;
-                    btn.Height = 100;
-                    btn.BackColor = Color.Beige;
+                    System.Windows.Forms.Button btn = new System.Windows.Forms.Button
+                    {
+                        Text = name.Trim(),
+                        Top = height / 2 - 50,
+                        Left = width / 10 + buttonCount * 110,
+                        Width = 100,
+                        Height = 100,
+                        BackColor = Color.Beige
+                    };
 
                     // Adaugă handler-ul pentru click
                     btn.Click += UserButton_Click;
@@ -132,29 +134,31 @@ namespace Project_Manager
             {
                 Text = "Projects List",
                 Top = this.ClientSize.Height / 2 - 50,
-                Left = 100,
+                Left = this.ClientSize.Width/10,
                 Width = 100,
                 Height = 100,
                 BackColor = Color.Beige
             };
 
-            projects.Click += projectsButton_Click;
+            projects.Click += showProjectsButton_Click;
 
             System.Windows.Forms.Button manage = new System.Windows.Forms.Button
             {
                 Text = "Manage Your Projects",
                 Top = this.ClientSize.Height / 2 - 50,
-                Left = 300,
+                Left = this.ClientSize.Width -410,
                 Width = 100,
                 Height = 100,
                 BackColor = Color.Beige
             };
 
+            manage.Click += manageButton_Click;
+
             System.Windows.Forms.Button change = new System.Windows.Forms.Button
             {
                 Text = "Change User",
                 Top = this.ClientSize.Height / 2 - 50,
-                Left = 500,
+                Left = this.ClientSize.Width -172,
                 Width = 100,
                 Height = 100,
                 BackColor = Color.Beige
@@ -226,7 +230,7 @@ namespace Project_Manager
             newUserControls.Add(backButton);
         }
 
-// Crearea noului utilizator
+        // Crearea noului utilizator
         private void NameTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -264,8 +268,8 @@ namespace Project_Manager
         }
 
 
-        // Butonul pentru lista de proiecte
-        private void projectsButton_Click(object sender, EventArgs e)
+        // Afișare proiectelor
+        private void showProjectsButton_Click(object sender, EventArgs e)
         {
             // Ascunde toate controalele din meniul utilizatorului în loc să le elimini
             foreach (Control control in userMenuControls)
@@ -309,7 +313,9 @@ namespace Project_Manager
                                 Width = labelWidth,
                                 Height = 45,
                                 Left = 60,
-                                Top = 20 + counter * 50
+                                Top = 20 + counter * 50,
+                                Font = new Font("Arial", 15, FontStyle.Regular),
+                                TextAlign = ContentAlignment.MiddleCenter
                             };
 
                             // Adaugă label-ul în form
@@ -334,7 +340,6 @@ namespace Project_Manager
 
                 returnButton.Click += returnButton_Click;
 
-                // Adaugă butonul "Back" în form
                 this.Controls.Add(returnButton);
 
             }
@@ -344,6 +349,158 @@ namespace Project_Manager
             }
         }
 
+        // Manipularea proiectelor
+        private void manageButton_Click(object sender, EventArgs e)
+        {
+            foreach (Control control in userMenuControls)
+            {
+                control.Visible = false;
+                control.Enabled = false;
+            }
+
+            string filepath = "C:\\Facultate\\BearingPoint\\RPA\\Project_Manager\\projects.txt";
+
+            try
+            {
+                string[] lines = File.ReadAllLines(filepath);
+                int counter = 0;
+                int labelWidth = 590;
+                bool projectFound = false;
+
+                foreach (string line in lines)
+                {
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        string[] parts = line.Split(',');
+
+                        if (parts.Length >= 4)
+                        {
+                            string name = parts[0].Trim();
+                            string projectName = parts[1].Trim();
+                            string status = parts[2].Trim();
+                            string deadline = parts[3].Trim();
+
+                            // Filtrăm proiectele 
+                            if (name == currentUserName)
+                            {
+                                Label projectLabel = new Label
+                                {
+                                    Text = $" {name} | \t {projectName} | \t {status} | \t {deadline}",
+                                    BackColor = Color.Beige,
+                                    AutoSize = false,
+                                    Width = labelWidth,
+                                    Height = 45,
+                                    Left = 60,
+                                    Top = 20 + counter * 50,
+                                    Font = new Font("Arial", 15, FontStyle.Regular),
+                                    TextAlign = ContentAlignment.MiddleCenter
+                                };
+
+                                this.Controls.Add(projectLabel);
+                                counter++;
+                                projectFound = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!projectFound)
+                {
+                    Label noProjectsLabel = new Label
+                    {
+                        Text = "Nu există niciun proiect pentru utilizatorul curent.",
+                        AutoSize = false,
+                        Width = labelWidth,
+                        Height = 100,
+                        Left = this.ClientSize.Width / 9,
+                        Top = this.ClientSize.Height / 5,
+                        Font = new Font("Arial", 20, FontStyle.Bold),
+                        TextAlign = ContentAlignment.MiddleCenter
+                    };
+
+                    System.Windows.Forms.Button addProject = new System.Windows.Forms.Button
+                    {
+                        Text = "Add Project",
+                        Top = this.ClientSize.Height / 2,
+                        Left = this.ClientSize.Width / 6,
+                        Width = 100,
+                        Height = 100,
+                        BackColor = Color.Beige,
+                    };
+
+                    addProject.Click += addProjectButton_Click;
+
+                    this.Controls.Add(noProjectsLabel);
+                    this.Controls.Add(addProject);
+                    userMenuControls.Add(addProject);
+
+                }
+                else
+                {
+                    System.Windows.Forms.Button addProject = new System.Windows.Forms.Button
+                    {
+                        Text = "Add Project",
+                        Top = this.ClientSize.Height / 2,
+                        Left = this.ClientSize.Width / 6,
+                        Width = 100,
+                        Height = 100,
+                        BackColor = Color.Beige,
+                    };
+
+                    addProject.Click += addProjectButton_Click;
+
+                    System.Windows.Forms.Button deleteProject = new System.Windows.Forms.Button
+                    {
+                        Text = "Delete Project",
+                        Top = this.ClientSize.Height / 2,
+                        Left = this.ClientSize.Width /6 + 300,
+                        Width = 100,
+                        Height = 100,
+                        BackColor = Color.Beige,
+                    };
+
+                    deleteProject.Click += deleteProjectButton_Click;
+
+                    this.Controls.Add(addProject);
+                    this.Controls.Add(deleteProject);
+                    userMenuControls.Add(addProject);
+                    userMenuControls.Add(deleteProject);
+
+
+                }
+
+                // Creăm butonul "Back" pentru a reveni la meniul principal
+                System.Windows.Forms.Button returnButton = new System.Windows.Forms.Button
+                {
+                    Text = "Back",
+                    Top = 17,
+                    Left = 5,
+                    Width = 50,
+                    Height = 50,
+                    BackColor = Color.White,
+                    Name = "BackButton"
+                };
+                returnButton.Click += returnButton_Click;
+                // Adaugă butonul "Back" în form
+                this.Controls.Add(returnButton);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Eroare la citirea fișierului: {ex.Message}", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Adăugarea Proiectului
+        private void addProjectButton_Click(object sender, System.EventArgs e)
+        { 
+
+        }
+
+        // Ștergerea Proiectului
+        private void deleteProjectButton_Click(object sender, System.EventArgs e)
+        { 
+
+        }
 
         // Schimbarea utilizatorului
         private void ChangeUser_Click(object sender, EventArgs e)
@@ -365,7 +522,7 @@ namespace Project_Manager
             InitializeButtons();
         }
 
-// Butonul de return
+        // Butonul de return
         private void BackButton_Click(object sender, EventArgs e)
         {
             // Elimină toate controalele create pentru adăugarea unui nou utilizator
@@ -389,12 +546,11 @@ namespace Project_Manager
 
         private void returnButton_Click(object sender, EventArgs e)
         {
-            // Elimină toate controalele afișate (lista de proiecte și butonul "Back")
+            // Elimină toate controalele afișate 
             List<Control> controlsToRemove = new List<Control>();
             foreach (Control control in this.Controls)
             {
-                // Adaugă toate controalele de tip Label sau butonul "Back" într-o listă pentru a fi eliminate
-                if (control.Name != null && control.Name == "BackButton" || control is Label)
+                if (control.Name != null && (control.Name == "BackButton" || control is Label))
                 {
                     controlsToRemove.Add(control);
                 }
@@ -411,6 +567,21 @@ namespace Project_Manager
             {
                 control.Visible = true;
                 control.Enabled = true;
+            }
+
+            // Elimină butoanele "Add Project" și "Delete Project" 
+            List<Control> additionalControlsToRemove = new List<Control>();
+            foreach (Control control in this.Controls)
+            {
+                if (control is System.Windows.Forms.Button button && (button.Text == "Add Project" || button.Text == "Delete Project"))
+                {
+                    additionalControlsToRemove.Add(control);
+                }
+            }
+
+            foreach (Control control in additionalControlsToRemove)
+            {
+                this.Controls.Remove(control);
             }
         }
     }

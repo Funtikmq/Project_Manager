@@ -36,6 +36,8 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Pink;
             this.ClientSize = new System.Drawing.Size(702, 453);
+            this.MaximumSize = new System.Drawing.Size(720, 500);
+            this.MinimumSize = new System.Drawing.Size(720, 500);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
