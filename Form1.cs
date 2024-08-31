@@ -27,13 +27,16 @@ namespace Project_Manager
             public string Name { get; set; }
             public string ProjectName { get; set; }
             public string Status { get; set; }
+            public string Type { get; set; }
             public string Deadline { get; set; }
+            
 
-            public Project(string name, string projectName, string status, string deadline)
+            public Project(string name, string projectName,string type,string status, string deadline)
             {
                 Name = name;
                 ProjectName = projectName;
                 Status = status;
+                Type = type;
                 Deadline = deadline;
             }
         }
@@ -44,14 +47,21 @@ namespace Project_Manager
             InitializeButtons();
         }
 
-// Butoanele din meniul utilizatorilor
+        // Butoanele din meniul utilizatorilor
         private void InitializeButtons()
         {
-            // Calea fișierului din care citim
+            // Fișierul cu Utilizatori
             string filePath = "C:\\Facultate\\BearingPoint\\RPA\\Project_Manager\\users.txt";
 
             try
             {
+                // Verifică dacă fișierul există
+                if (!File.Exists(filePath))
+                {
+                    // Crează un fișier gol dacă nu există
+                    File.Create(filePath).Dispose();
+                }
+
                 // Citește toate liniile din fișier
                 string[] lines = File.ReadAllLines(filePath);
 
@@ -60,7 +70,7 @@ namespace Project_Manager
                     .SelectMany(line => line.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
                     .ToList();
 
-                // Creează butoane în funcție de nume
+                // Butoane în funcție de nume
                 int buttonCount = 0;
                 int width = this.ClientSize.Width;
                 int height = this.ClientSize.Height;
@@ -76,13 +86,8 @@ namespace Project_Manager
                         BackColor = Color.Beige
                     };
 
-                    // Adaugă handler-ul pentru click
                     btn.Click += UserButton_Click;
-
-                    // Adaugă butonul în form
                     this.Controls.Add(btn);
-
-                    // Incrementare pentru următorul buton
                     buttonCount++;
                 }
 
@@ -102,12 +107,10 @@ namespace Project_Manager
 
                     this.Controls.Add(newUser);
                 }
-
             }
             catch (Exception ex)
             {
-                // Gestionarea eventualelor erori
-                MessageBox.Show("A apărut o eroare la citirea fișierului: " + ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -294,27 +297,25 @@ namespace Project_Manager
                     {
                         string[] parts = line.Split(',');
 
-                        if (parts.Length >= 4)
+                        if (parts.Length >= 5)
                         {
                             string name = parts[0].Trim();
                             string projectName = parts[1].Trim();
-                            string status = parts[2].Trim();
-                            string deadline = parts[3].Trim();
-
-                            // Creăm un obiect de tip Project
-                            Project project = new Project(name, projectName, status, deadline);
+                            string type = parts[2].Trim();
+                            string status = parts[3].Trim();
+                            string deadline = parts[4].Trim();
 
                             // Creăm un label pentru a afișa informațiile despre proiect
                             Label projectLabel = new Label
                             {
-                                Text = $" {project.Name} | \t {project.ProjectName} | \t {project.Status} | \t {project.Deadline}",
+                                Text = $"{name} | {projectName} |{type} | {status} | {deadline}", // Corectare aici
                                 BackColor = Color.Beige,
                                 AutoSize = false,
                                 Width = labelWidth,
                                 Height = 45,
                                 Left = 60,
                                 Top = 20 + counter * 50,
-                                Font = new Font("Arial", 15, FontStyle.Regular),
+                                Font = new Font("Arial", 10, FontStyle.Regular),
                                 TextAlign = ContentAlignment.MiddleCenter
                             };
 
@@ -341,7 +342,6 @@ namespace Project_Manager
                 returnButton.Click += returnButton_Click;
 
                 this.Controls.Add(returnButton);
-
             }
             catch (Exception ex)
             {
@@ -373,26 +373,27 @@ namespace Project_Manager
                     {
                         string[] parts = line.Split(',');
 
-                        if (parts.Length >= 4)
+                        if (parts.Length >= 5)
                         {
                             string name = parts[0].Trim();
                             string projectName = parts[1].Trim();
-                            string status = parts[2].Trim();
-                            string deadline = parts[3].Trim();
+                            string type = parts[2].Trim();
+                            string status = parts[3].Trim();
+                            string deadline = parts[4].Trim();
 
                             // Filtrăm proiectele 
                             if (name == currentUserName)
                             {
                                 Label projectLabel = new Label
                                 {
-                                    Text = $" {name} | \t {projectName} | \t {status} | \t {deadline}",
+                                    Text = $"{name} | {projectName} | {type} | {status} | {deadline}", // Corectare aici
                                     BackColor = Color.Beige,
                                     AutoSize = false,
                                     Width = labelWidth,
                                     Height = 45,
                                     Left = 60,
                                     Top = 20 + counter * 50,
-                                    Font = new Font("Arial", 15, FontStyle.Regular),
+                                    Font = new Font("Arial", 10, FontStyle.Regular),
                                     TextAlign = ContentAlignment.MiddleCenter
                                 };
 
@@ -433,7 +434,6 @@ namespace Project_Manager
                     this.Controls.Add(noProjectsLabel);
                     this.Controls.Add(addProject);
                     userMenuControls.Add(addProject);
-
                 }
                 else
                 {
@@ -453,7 +453,7 @@ namespace Project_Manager
                     {
                         Text = "Delete Project",
                         Top = this.ClientSize.Height / 2,
-                        Left = this.ClientSize.Width /6 + 300,
+                        Left = this.ClientSize.Width / 6 + 300,
                         Width = 100,
                         Height = 100,
                         BackColor = Color.Beige,
@@ -465,8 +465,6 @@ namespace Project_Manager
                     this.Controls.Add(deleteProject);
                     userMenuControls.Add(addProject);
                     userMenuControls.Add(deleteProject);
-
-
                 }
 
                 // Creăm butonul "Back" pentru a reveni la meniul principal
@@ -491,9 +489,63 @@ namespace Project_Manager
         }
 
         // Adăugarea Proiectului
-        private void addProjectButton_Click(object sender, System.EventArgs e)
-        { 
+        private void addProjectButton_Click(object sender, EventArgs e)
+        {
+            using (AddProjectForm addProjectForm = new AddProjectForm())
+            {
+                if (addProjectForm.ShowDialog() == DialogResult.OK)
+                {
+                    string projectName = addProjectForm.ProjectName;
+                    string projectType = addProjectForm.ProjectType;
+                    string projectStatus = addProjectForm.Status;
+                    string deadline = addProjectForm.Deadline;
+ 
 
+                    // Creăm un obiect Project cu informațiile introduse
+                    Project newProject = new Project (currentUserName, projectName, projectType, projectStatus, deadline);
+
+                    // Ștergem label-ul care spune că nu există proiecte
+                    foreach (Control control in this.Controls)
+                    {
+                        if (control is Label label && label.Text.Contains("Nu există niciun proiect"))
+                        {
+                            this.Controls.Remove(control);
+                            control.Dispose();
+                        }
+                    }
+
+                    // Afișăm proiectul pe formă
+                    Label projectLabel = new Label
+                    {
+                        Text = $"{currentUserName} | {projectName} | {projectType} | {projectStatus} | {deadline}", 
+                        BackColor = Color.Beige,
+                        AutoSize = false,
+                        Width = 590,
+                        Height = 45,
+                        Left = 60,
+                        Top = 20 + this.Controls.OfType<Label>().Count() * 50,
+                        Font = new Font("Arial", 10, FontStyle.Regular),
+                        TextAlign = ContentAlignment.MiddleCenter
+                    };
+
+                    this.Controls.Add(projectLabel);
+
+                    // Salvează proiectul într-un fișier
+                    string filepath = "C:\\Facultate\\BearingPoint\\RPA\\Project_Manager\\projects.txt";
+
+                    try
+                    {
+                        using (StreamWriter writer = new StreamWriter(filepath, true))
+                        {
+                            writer.WriteLine($"{currentUserName},{projectName},{projectType},{projectStatus},{deadline}"); // Corectare aici
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("A apărut o eroare la scrierea în fișier: " + ex.Message);
+                    }
+                }
+            }
         }
 
         // Ștergerea Proiectului
