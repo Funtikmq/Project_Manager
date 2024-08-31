@@ -1,6 +1,6 @@
 ﻿namespace Project_Manager
 {
-    partial class projectManager
+    partial class UpdateStatusForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,16 +30,14 @@
         {
             this.SuspendLayout();
             // 
-            // projectManager
+            // UpdateStatusForm
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-            this.AutoScroll = true;
-            this.BackColor = System.Drawing.Color.Pink;
-            this.ClientSize = new System.Drawing.Size(702, 453);
-            this.MaximumSize = new System.Drawing.Size(720, 500);
-            this.MinimumSize = new System.Drawing.Size(720, 500);
-            this.Name = "projectManager";
-            this.Text = "Project Manager";
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.LightPink;
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Name = "UpdateStatusForm";
+            this.Text = "UpdateStatusForm";
             this.ResumeLayout(false);
 
         }
@@ -47,4 +45,3 @@
         #endregion
     }
 }
-

@@ -1,5 +1,0 @@
-Slava,TEC Trends,PowerPoint,20%,03.09.24
-Nadin,Student Internship,Word,99%,30.09.24
-Nadin,Water Purification,Word,44%,22.09.24
-Nadin,Air Conditioning,PowerPoint,17%,30.09.21
-Slava,RPA Project,PowerPoint,91%,03.09.24
